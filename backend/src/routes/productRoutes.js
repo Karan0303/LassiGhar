@@ -1,6 +1,7 @@
 const express = require("express");
 const Product = require("../models/Product");
 const { auth, requireAdmin } = require("../middleware/auth");
+const { upload } = require("../utils/cloudinary");
 
 const router = express.Router();
 
@@ -26,9 +27,13 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", auth, requireAdmin, async (req, res) => {
+router.post("/", auth, requireAdmin, upload.single("image"), async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const productData = { ...req.body };
+    if (req.file) {
+      productData.imageUrl = req.file.path;
+    }
+    const product = await Product.create(productData);
     res.status(201).json(product);
   } catch (err) {
     console.error("Create product error:", err);
@@ -36,9 +41,13 @@ router.post("/", auth, requireAdmin, async (req, res) => {
   }
 });
 
-router.put("/:id", auth, requireAdmin, async (req, res) => {
+router.put("/:id", auth, requireAdmin, upload.single("image"), async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const productData = { ...req.body };
+    if (req.file) {
+      productData.imageUrl = req.file.path;
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,
       runValidators: true,
     });
