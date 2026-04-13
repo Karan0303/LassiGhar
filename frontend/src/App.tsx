@@ -129,9 +129,8 @@ function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link to="/" className="group flex items-center gap-3">
             <div className="relative">
-              <div className="absolute inset-0 bg-lassi-pink blur-lg opacity-20 group-hover:opacity-40 transition-opacity rounded-full"></div>
-              <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-gradient-to-br from-lassi-yellow to-lassi-pink flex items-center justify-center text-slate-950 font-black shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
-                <span className="text-lg">LG</span>
+              <div className="relative h-10 sm:h-12 w-auto min-w-[40px] px-2 rounded-2xl bg-white overflow-hidden flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <img src="/logo.jpeg" alt="Lassi Ghar Logo" className="h-full w-auto object-contain" />
               </div>
             </div>
             <div className="hidden sm:block">
@@ -149,7 +148,7 @@ function Layout() {
               Menu
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-lassi-yellow transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            {user && (
+            {user && user.role === "customer" && (
               <Link to="/orders" className="relative text-slate-300 hover:text-white transition-colors group py-1">
                 Orders
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-lassi-yellow transition-all duration-300 group-hover:w-full"></span>
@@ -213,8 +212,10 @@ function Layout() {
       <footer className="border-t border-white/5 bg-black/60 pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-lassi-yellow to-lassi-pink flex items-center justify-center text-slate-950 font-black text-sm">LG</div>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-auto px-2 rounded-lg bg-white overflow-hidden flex items-center justify-center">
+                <img src="/logo.jpeg" alt="Lassi Ghar" className="h-full w-auto object-contain" />
+              </div>
               <span className="font-bold text-xl text-white">Lassi Ghar</span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
@@ -248,12 +249,13 @@ function Layout() {
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-6 uppercase tracking-widest text-xs">HQ Location</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-4">
-              GLS University Campus,<br />
-              Off C.G. Road, Ahmedabad, <br />
-              Gujarat 380006
-            </p>
+            <h4 className="font-bold text-white mb-6 uppercase tracking-widest text-xs">Our Store</h4>
+            <div className="text-sm text-slate-400 leading-relaxed space-y-2 mb-4">
+              <p>GF 1, Suyog Complex, New CG Rd,</p>
+              <p>nr. SAKAR ENGLISH SCHOOL,</p>
+              <p>Shrinath Bungalows-I, Nigam Nagar,</p>
+              <p>Chandkheda, Ahmedabad, Gujarat 382424</p>
+            </div>
             <p className="text-sm font-semibold text-white">support@lassighar.com</p>
           </div>
         </div>
@@ -377,11 +379,11 @@ function HomePage() {
             className="hidden lg:block relative"
           >
             <div className="absolute inset-0 bg-lassi-pink/20 blur-[100px] rounded-full animate-pulse" />
-            <div className="relative rounded-[3rem] overflow-hidden border border-white/10 bg-slate-900/40 p-4 transform hover:rotate-1 transition-transform duration-700">
+            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 bg-slate-900/40 p-4 transform hover:rotate-1 transition-transform duration-700">
                <img
-                src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?q=80&w=1974&auto=format&fit=crop"
+                src="/fruitlassi.jfif"
                 alt="Premium Lassi"
-                className="rounded-[2.5rem] w-full aspect-[4/5] object-cover"
+                className="w-full h-full object-contain"
               />
               <div className="absolute bottom-10 left-10 p-6 rounded-3xl bg-black/60 backdrop-blur-md border border-white/10 max-w-[200px]">
                 <p className="text-lassi-yellow font-bold text-xl">Best Seller</p>
@@ -471,6 +473,7 @@ function HomePage() {
 }
 
 function CustomerHome() {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -618,13 +621,15 @@ function CustomerHome() {
                           </p>
                         )}
                       </div>
-                      <button
-                        onClick={() => addToCart(p)}
-                        className="w-full mt-6 py-3 rounded-2xl bg-white/10 hover:bg-lassi-yellow hover:text-slate-950 font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-2 group/btn"
-                      >
-                        <Plus className="h-3.5 w-3.5 group-hover/btn:rotate-90 transition-transform" />
-                        Add to Order
-                      </button>
+                      {user?.role !== "admin" && (
+                        <button
+                          onClick={() => addToCart(p)}
+                          className="w-full mt-6 py-3 rounded-2xl bg-white/10 hover:bg-lassi-yellow hover:text-slate-950 font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-2 group/btn"
+                        >
+                          <Plus className="h-3.5 w-3.5 group-hover/btn:rotate-90 transition-transform" />
+                          Add to Order
+                        </button>
+                      )}
                     </div>
                   </motion.article>
                 ))}
@@ -633,67 +638,69 @@ function CustomerHome() {
           )}
         </section>
 
-        <section className="w-full md:w-96">
-          <div className="bg-white/5 rounded-[2.5rem] border border-white/5 p-6 sticky top-24 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="font-bold text-white flex items-center gap-2">
-                <ShoppingBag className="h-5 w-5 text-lassi-yellow" />
-                Your Bag
-              </h2>
-              <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-slate-400">{cart.length} items</span>
-            </div>
-
-            {cart.length === 0 ? (
-              <div className="py-12 text-center space-y-3">
-                <div className="h-16 w-16 bg-white/5 rounded-3xl flex items-center justify-center mx-auto">
-                    <ShoppingBag className="h-8 w-8 text-slate-700" />
-                </div>
-                <p className="text-xs text-slate-500">Your bag is feeling light.<br/>Add some flavours to start!</p>
+        {user?.role !== "admin" && (
+          <section className="w-full md:w-96">
+            <div className="bg-white/5 rounded-[2.5rem] border border-white/5 p-6 sticky top-24 space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="font-bold text-white flex items-center gap-2">
+                  <ShoppingBag className="h-5 w-5 text-lassi-yellow" />
+                  Your Bag
+                </h2>
+                <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-slate-400">{cart.length} items</span>
               </div>
-            ) : (
-              <>
-                <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                  {cart.map((item) => (
-                    <div key={item.product._id} className="flex gap-4 group">
-                      <div className="h-12 w-12 rounded-xl bg-slate-800 flex-shrink-0 overflow-hidden border border-white/5">
-                        {item.product.imageUrl && <img src={item.product.imageUrl} className="w-full h-full object-cover" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate text-white">{item.product.name}</p>
-                        <p className="text-[10px] text-slate-500">{item.quantity} x ₹{item.product.price}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-white">₹{item.product.price * item.quantity}</p>
-                        <button 
-                          onClick={() => removeFromCart(item.product._id)}
-                          className="text-[10px] text-red-500/50 hover:text-red-500 transition-colors"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="pt-6 border-t border-white/10 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400 font-medium font-mono uppercase">Grand Total</span>
-                    <span className="text-2xl font-black text-lassi-yellow">₹{total}</span>
+
+              {cart.length === 0 ? (
+                <div className="py-12 text-center space-y-3">
+                  <div className="h-16 w-16 bg-white/5 rounded-3xl flex items-center justify-center mx-auto">
+                      <ShoppingBag className="h-8 w-8 text-slate-700" />
                   </div>
-                  <button
-                    onClick={placeOrder}
-                    disabled={placingOrder}
-                    className="relative w-full overflow-hidden group py-4 rounded-2xl bg-gradient-to-r from-lassi-yellow to-lassi-pink text-slate-950 font-black shadow-xl shadow-lassi-pink/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      {placingOrder ? "Processing..." : "Confirm & Pay"}
-                    </span>
-                  </button>
+                  <p className="text-xs text-slate-500">Your bag is feeling light.<br/>Add some flavours to start!</p>
                 </div>
-              </>
-            )}
-          </div>
-        </section>
+              ) : (
+                <>
+                  <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                    {cart.map((item) => (
+                      <div key={item.product._id} className="flex gap-4 group">
+                        <div className="h-12 w-12 rounded-xl bg-slate-800 flex-shrink-0 overflow-hidden border border-white/5">
+                          {item.product.imageUrl && <img src={item.product.imageUrl} className="w-full h-full object-cover" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold truncate text-white">{item.product.name}</p>
+                          <p className="text-[10px] text-slate-500">{item.quantity} x ₹{item.product.price}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-white">₹{item.product.price * item.quantity}</p>
+                          <button 
+                            onClick={() => removeFromCart(item.product._id)}
+                            className="text-[10px] text-red-500/50 hover:text-red-500 transition-colors"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="pt-6 border-t border-white/10 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-400 font-medium font-mono uppercase">Grand Total</span>
+                      <span className="text-2xl font-black text-lassi-yellow">₹{total}</span>
+                    </div>
+                    <button
+                      onClick={placeOrder}
+                      disabled={placingOrder}
+                      className="relative w-full overflow-hidden group py-4 rounded-2xl bg-gradient-to-r from-lassi-yellow to-lassi-pink text-slate-950 font-black shadow-xl shadow-lassi-pink/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                    >
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {placingOrder ? "Processing..." : "Confirm & Pay"}
+                      </span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
@@ -1104,8 +1111,8 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="py-12 px-6 max-w-7xl mx-auto grid gap-12 lg:grid-cols-[1fr,1.5fr]">
-      <div className="space-y-8">
+    <div className="py-12 px-6 max-w-7xl mx-auto">
+      <div className="space-y-8 max-w-2xl mx-auto">
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Inventory Management</h2>
           <p className="text-sm text-slate-500">Add new handcrafted beverages to the menu.</p>
@@ -1226,54 +1233,6 @@ function AdminDashboard() {
             ))}
           </div>
         </section>
-      </div>
-
-      <div className="space-y-8">
-         <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Active Orders</h2>
-              <p className="text-sm text-slate-500">Monitor and update delivery status.</p>
-            </div>
-            <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-lassi-pink" />
-            </div>
-         </div>
-
-         <div className="grid gap-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-            {orders.length === 0 ? (
-               <div className="p-12 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
-                 <p className="text-slate-500 italic">No orders received yet.</p>
-               </div>
-            ) : (
-              orders.map(o => (
-                <div key={o._id} className="p-6 rounded-[2rem] bg-white/5 border border-white/10 flex justify-between items-center group hover:border-white/20 transition-all">
-                   <div className="space-y-2">
-                      <p className="text-white font-bold text-sm tracking-tight uppercase">Order #{o._id.slice(-8)}</p>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{new Date(o.createdAt).toLocaleString()}</p>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status:</span>
-                        <select
-                          value={o.orderStatus}
-                          onChange={(e) => updateOrderStatus(o._id, e.target.value)}
-                          className={`bg-black/40 border border-white/5 rounded-lg px-2 py-1 text-[10px] font-bold uppercase outline-none focus:ring-1 focus:ring-lassi-yellow/50 ${
-                            o.orderStatus === 'Completed' ? 'text-emerald-400' : 'text-lassi-yellow'
-                          }`}
-                        >
-                          <option value="Processing">Processing</option>
-                          <option value="Preparing">Preparing</option>
-                          <option value="Out for Delivery">Out for Delivery</option>
-                          <option value="Completed">Completed</option>
-                        </select>
-                      </div>
-                   </div>
-                   <div className="text-right">
-                      <p className="text-xl font-black text-white">₹{o.totalAmount}</p>
-                      <p className="text-[10px] text-slate-600 font-mono italic">{o.paymentStatus}</p>
-                   </div>
-                </div>
-              ))
-            )}
-         </div>
       </div>
     </div>
   );
