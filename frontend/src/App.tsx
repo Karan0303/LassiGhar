@@ -1111,8 +1111,8 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="py-12 px-6 max-w-7xl mx-auto">
-      <div className="space-y-8 max-w-2xl mx-auto">
+    <div className="py-12 px-6 max-w-7xl mx-auto grid gap-12 lg:grid-cols-[1fr,1.5fr]">
+      <div className="space-y-8">
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Inventory Management</h2>
           <p className="text-sm text-slate-500">Add new handcrafted beverages to the menu.</p>
@@ -1233,6 +1233,54 @@ function AdminDashboard() {
             ))}
           </div>
         </section>
+      </div>
+
+      <div className="space-y-8">
+         <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">Active Orders</h2>
+              <p className="text-sm text-slate-500">Monitor and update delivery status.</p>
+            </div>
+            <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-lassi-pink" />
+            </div>
+         </div>
+
+         <div className="grid gap-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+            {orders.length === 0 ? (
+               <div className="p-12 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
+                 <p className="text-slate-500 italic">No orders received yet.</p>
+               </div>
+            ) : (
+              orders.map(o => (
+                <div key={o._id} className="p-6 rounded-[2rem] bg-white/5 border border-white/10 flex justify-between items-center group hover:border-white/20 transition-all">
+                   <div className="space-y-2">
+                      <p className="text-white font-bold text-sm tracking-tight uppercase">Order #{o._id.slice(-8)}</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{new Date(o.createdAt).toLocaleString()}</p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status:</span>
+                        <select
+                          value={o.orderStatus}
+                          onChange={(e) => updateOrderStatus(o._id, e.target.value)}
+                          className={`bg-black/40 border border-white/5 rounded-lg px-2 py-1 text-[10px] font-bold uppercase outline-none focus:ring-1 focus:ring-lassi-yellow/50 ${
+                            o.orderStatus === 'Completed' ? 'text-emerald-400' : 'text-lassi-yellow'
+                          }`}
+                        >
+                          <option value="Processing">Processing</option>
+                          <option value="Preparing">Preparing</option>
+                          <option value="Out for Delivery">Out for Delivery</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </div>
+                   </div>
+                   <div className="text-right">
+                      <p className="text-xl font-black text-white">₹{o.totalAmount}</p>
+                      <p className="text-[10px] text-slate-600 font-mono italic">{o.paymentStatus}</p>
+                   </div>
+                </div>
+              ))
+            )}
+         </div>
       </div>
     </div>
   );
